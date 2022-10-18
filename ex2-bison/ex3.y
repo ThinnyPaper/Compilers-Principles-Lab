@@ -5,8 +5,8 @@
 #define YYSTYPE char*
 #endif
 
-char numStr[50];
 char idStr[50];
+char numStr[50];
 int yylex();
 extern int yyparse();
 FILE* yyin;
@@ -33,7 +33,6 @@ lines   :   lines expr ';' {printf("%s\n", $2);}
         |   lines ';'
         |   
         ;
-
 expr    :   expr ADD expr           {
                                     $$ = (char*) malloc (50*sizeof(char));
                                     strcpy($$, $1);
@@ -57,7 +56,7 @@ expr    :   expr ADD expr           {
                                     strcpy($$, $1);
                                     strcat($$, $3);
                                     strcat($$, "/ ");
-                                    }
+                                     }
         |   LEFT expr RIGHT         {
                                     $$ = (char*) malloc (50*sizeof(char));
                                     strcpy($$, $2);
@@ -85,69 +84,59 @@ expr    :   expr ADD expr           {
 
 int yylex()
 {
-    int ch;
+    int t;
     while(1) {
-        ch = getchar();
-        if(ch == ' ' || ch == '\t' || ch =='\n');
-        else if (isdigit(ch))
-        /* else if (ch >= '0' && ch <= '9') */
-        {
+        t = getchar();
+        if(t == ' ' || t == '\t' || t =='\n');
+        else if (isdigit(t))
+        /* else if (t >= '0' && t <= '9') */
+         {
             int ti = 0;
-            while(isdigit(ch))
-            /* while(ch >= '0' && ch <= '9') */
+            while(isdigit(t))
+            /* while(t >= '0' && t <= '9') */
             {
-                numStr[ti] = ch;
-                ch = getchar();
+                numStr[ti] = t;
+                t = getchar();
                 ti++;
             }
             numStr[ti] = '\0';
             yylval = numStr;
-            ungetc(ch, stdin);
+            ungetc(t, stdin);
             return NUMBER;
         }
-        else if (isalpha(ch) || ch == '_')
-        /* else if (ch >= 'a' && ch <= 'z' || ch >='A' && ch <= 'Z' || ch == '_') */
+        else if (isalpha(t) || t == '_')
+        /* else if (t >= 'a' && t <= 'z' || t >='A' && t <= 'Z' || t == '_') */
         {
             int ti = 0;
-            while(isalpha(ch) || isdigit(ch) || ch == '_')
-            /* while(ch >= 'a' && ch <= 'z' || ch >='A' && ch <= 'Z' || ch == '_' || ch >= '0' && ch <= '9' ) */
+            while(isalpha(t) || isdigit(t) || t == '_')
+            /* while(t >= 'a' && t <= 'z' || t >='A' && t <= 'Z' || t == '_' || t >= '0' && t <= '9' ) */
             {
-                idStr[ti] = ch;
-                ch = getchar();
+                idStr[ti] = t;
+                t = getchar();
                 ti++;
             }
             idStr[ti] = '\0';
             yylval = idStr;
-            ungetc(ch, stdin);
+            ungetc(t, stdin);
             return ID;
         }
-        else if (ch == '+')
-        {
-            return ADD;
-        }
-        else if(ch == '-')
-        {
-            return SUB;
-        }
-        else if (ch == '*')
-        {
-            return MUL;
-        }
-        else if (ch == '/')
-        {
-            return DIV;
-        }
-        else if (ch == '(')
-        {
-            return LEFT;
-        }
-        else if (ch == ')')
-        {
-            return RIGHT;
-        }
-        else
-        {
-            return ch;
+        else{
+            switch (t) {
+                case '+':
+                    return ADD;
+                case '-':
+                    return SUB;
+                case '*':
+                    return MUL;
+                case '/':
+                    return DIV;
+                case '(':
+                    return LEFT;
+                case ')':
+                    return RIGHT;
+                default:
+                    return t;
+	            }
         }
     }
 }
